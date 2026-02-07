@@ -1,1 +1,2 @@
-*/a.out
+# all build artefacts will go into one of these bad boys
+**/build/

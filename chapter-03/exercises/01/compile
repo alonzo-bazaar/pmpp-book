@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+BUILD_DIR="./build"
+# compile (cuda)c(++) files with acpp
+# (I don't have a cuda card on me rn so gotta make do with this)
+cuda_compile() {
+    local args=("$@")
+    acpp --acpp-pcuda\
+	 --acpp-pcuda-chevron-launch\
+	 --acpp-targets=generic\
+	 "${args[@]}"
+}
+
+main() {
+    [[ -d "$BUILD_DIR" ]] || mkdir "$BUILD_DIR"
+    for i in "ELEMENTS" "ROWS" "COLUMNS"; do
+	echo "$i" # just to make sure it's compiling
+        cuda_compile -o "$BUILD_DIR/$i"\
+		     "-DWHAT_WE_DOIN=$i"\
+		     -Iinclude\
+		     addition.cu
+    done
+}
+
+main "$@"
