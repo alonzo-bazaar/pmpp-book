@@ -1,0 +1,23 @@
+* benefits of the three approaches
+the exercise asks to list the benefits of the three approaches it asks to take, having each thread handle
+- a matrix row
+- a matrix column
+- or a matrix element
+
+** by rows
+I have no idea
+
+It could be a strategy to reduce the number of threads needed, perhaps on lower end devices, but that seems antithetical to everything we've talked about so far.
+
+Having each thread do sequential memory accesses /could/ be good but we've kinda established that GPUs don't benefit that much from cache locality compared to CPUs
+
+** by columns
+Something about coalesced memory accesses?
+
+But they're not even discussed in this chapter 😐
+
+** by element
+Going by element has the highest degree of parallelism, so that's probably the right approach for this sort of task
+
+I don't have a gpu to benchmark this tho 😐
+
