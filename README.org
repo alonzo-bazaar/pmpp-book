@@ -1,0 +1,4 @@
+* PMPP BOOK
+exercises, notes, and the like from the book
+
+versioned for future reference, +pumping github commit count,+ and ease in sending the exercise to someone when everything stops working
