@@ -1,6 +1,9 @@
+#pragma once
+
 #include<CL/cl.h>  
-#include<assert.h>     // for assert
-#include<string.h>     // for memset
+#include<assert.h>     // for assert()
+#include<string.h>     // for memset()
+#include<math.h>       // for ceil()
 #include"general.h"    // try_... and die_... macros
 
 // for debug prints
@@ -73,8 +76,8 @@ typedef void(*mm_fun)(const cl_kernel,
                       const unsigned int,
                       const unsigned int,
                       const unsigned int,
-		      const size_t,
-		      const size_t,
+					  const size_t,
+					  const size_t,
                       float*, float*, float* B);
 
 // assert equality between two floating point numbers within a given epsilon
@@ -129,14 +132,14 @@ long long millis() {
 // wraps matrix multiplcation kernel call to look like a multiplication of
 // host matrices
 void kernel_matmul(const cl_kernel kernel,
-                      cl_context context,
-                      cl_command_queue queue,
-                      const unsigned int height_A,
-                      const unsigned int common,
-                      const unsigned int width_B,
-		      const size_t group_x,
-		      const size_t group_y,
-                      float* out, float* A, float* B) {
+				   cl_context context,
+				   cl_command_queue queue,
+				   const unsigned int height_A,
+				   const unsigned int common,
+				   const unsigned int width_B,
+				   const size_t group_x,
+				   const size_t group_y,
+				   float* out, float* A, float* B) {
     cl_int err;
 
     const unsigned int width_A = common;
@@ -174,7 +177,10 @@ void kernel_matmul(const cl_kernel kernel,
 
     // launch parameters
     // width first so that adjacent threads access adjacent matrix things
-    size_t global_dims[2] = {(size_t)width_B, (size_t)height_A};
+	// global dimensions must be evenly divisible by local dimensions
+	// ergo the whole ceil() thing
+    size_t global_dims[2] = {(size_t)group_x*ceil((float)width_B/group_x),
+							 (size_t)group_y*ceil((float)height_A/group_y)};
     size_t local_dims[2]  = {group_x, group_y};
 
     // kernel launch
@@ -182,14 +188,14 @@ void kernel_matmul(const cl_kernel kernel,
     // https://registry.khronos.org/OpenCL/sdk/3.0/docs/man/html/clEnqueueNDRangeKernel.html
     try_ret(clEnqueueNDRangeKernel
             (queue,
-	     kernel,
+			 kernel,
              2,      // work dim is 2 (2d grid, rows and columns)
              NULL,   // global work offset is not provided, so NULL
-             global_dims,
-	             // dimensions of work are width_B * height_A
-	             // one work item per cell of output matrix
-             local_dims,
-	             // dimensions of work group/block are group_x * group_y
+             &global_dims[0],
+// dimensions of work are width_B * height_A
+// one work item per cell of output matrix
+             &local_dims[0],
+// dimensions of work group/block are group_x * group_y
 		     
              0,      // no events in waiting list, so the number of them is 0
              NULL,   // and the list of them is NULL
@@ -219,8 +225,8 @@ void cpu_matmul(const cl_kernel kernel,
                 const unsigned int height_A,
                 const unsigned int common,
                 const unsigned int width_B,
-		const size_t group_x,
-		const size_t group_y,
+				const size_t group_x,
+				const size_t group_y,
                 float* out, float* A, float* B) {
     // ignored, kept for api consistency with other functions under test
     (void)kernel;
@@ -276,7 +282,7 @@ void test_all_ones(const cl_kernel kernel,
 
     under_test(kernel, context, queue,
                height_A, width_A, width_B,
-	       16, 16, // random values I think look cool
+			   16, 16, // random values I think look cool
                out, A, B);
 
 #ifdef VERBOSE_DEBUGGING
@@ -336,7 +342,7 @@ void test_id_times_random(const cl_kernel kernel,
 
     under_test(kernel, context, queue,
                height_A, width_A, width_B,
-	       16, 16,
+			   16, 16,
                out, A, B);
 
     for(unsigned int i = 0; i<height_A * width_B; ++i)
@@ -368,7 +374,7 @@ void test_matmul(const cl_kernel kernel,
 void benchmark_matmul(const cl_kernel kernel,
                       cl_context context,
                       cl_command_queue queue) {
-    long long t
+    long long t;
     // puts("benchmarking cpu");
     // t = millis();
     // for(int i =0 ; i<20; ++i) {

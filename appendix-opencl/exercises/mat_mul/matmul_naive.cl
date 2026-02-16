@@ -32,11 +32,11 @@
  * and instead stored in "registers" (at least that's what cuda calls them)
  */
 __kernel void matmul_naive(const uint height_A,
-			   const uint common, // width_A = height_B = common dimension
-			   const uint width_B,
-			   __global float* out,
-			   __global const float* A,
-			   __global const float* B) {
+						   const uint common,// = width_A = height_B
+						   const uint width_B,
+						   __global float* out,
+						   __global const float* A,
+						   __global const float* B) {
     // these are synonims for common, with different names for clarity
     // hopefully optimized out, having two extra variables for work item
     // would be a pain in the ass otherwise
@@ -47,31 +47,33 @@ __kernel void matmul_naive(const uint height_A,
     const size_t col = get_global_id(0);
     const size_t row = get_global_id(1);
 
-    float acc = 0;
-    // iterate the row-th row of A and the col-th column of B
-    // which are both of size common
-    // A[row][i], B[i][col]
-    for(size_t i = 0; i<common; ++i) {
-        size_t a_ind = (width_A * row) + i; // iterate row of A
-        size_t b_ind = (width_B * i) + col; // iterate col of B
+	if(row < height_A && col < width_B) {
+		float acc = 0;
+		// iterate the row-th row of A and the col-th column of B
+		// which are both of size common
+		// A[row][i], B[i][col]
+		for(size_t i = 0; i<common; ++i) {
+			size_t a_ind = (width_A * row) + i; // iterate row of A
+			size_t b_ind = (width_B * i) + col; // iterate col of B
 
-        acc += A[a_ind] * B[b_ind];
-
-#ifdef DEBUGGING
-        if(row == 0 && col == 10) {
-            printf("%zu - %zu : %zu/%zu - %f\n",
-                   row, col, i, common, acc);
-            printf("%f - %f\n", A[a_ind], B[b_ind]);
-            printf("%zu - %zu\n", a_ind, b_ind);
-        }
-#endif
-    }
-
-    size_t out_ind = (row * width_B) + col;
+			acc += A[a_ind] * B[b_ind];
 
 #ifdef DEBUGGING
-    printf("%zu - %zu : %f\n", row, col, acc);
+			if(row == 0 && col == 10) {
+				printf("%zu - %zu : %zu/%zu - %f\n",
+					   row, col, i, common, acc);
+				printf("%f - %f\n", A[a_ind], B[b_ind]);
+				printf("%zu - %zu\n", a_ind, b_ind);
+			}
+#endif
+		}
+
+		size_t out_ind = (row * width_B) + col;
+
+#ifdef DEBUGGING
+		printf("%zu - %zu : %f\n", row, col, acc);
 #endif
 
-    out[out_ind] = acc;
+		out[out_ind] = acc;
+	}
 }

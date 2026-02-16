@@ -27,7 +27,11 @@ comp-cpu() {
 }
 
 main() {
-    comp-cl -I../include -o build/main 'main.c' "$@"
+    # ./include for includes local to this example
+    # ../include for includes global among the various examples
+    comp-cl -I./include\
+	    -I../include\
+	    -o build/main 'main.c' "$@"
 }
 
 main "$@"

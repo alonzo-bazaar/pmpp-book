@@ -1,20 +1,22 @@
 #include<stdio.h>
 #include<CL/cl.h>
-#include<sys/time.h> // getgimeofday(), for current_millis()
 
 #define STB_ISH_UTILS_IMPLEMENTATION
 #include "general.h"
 
+#define CONFIG_INCLUDE_IMPLEMENTATION
+#include "config.h"
+
+// fuck it, it global now
+mm_config mmc;
+
 #define STB_ISH_TEST_MATMUL_IMPLEMENTATION
 #include "test-matmul.h"
 
-long long current_millis() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000LL + tv.tv_usec / 1000;
-}
+int main(int argc, char** argv) {
+	populate_default_config(&mmc);
+	parse_argv_into_config(argc, argv, &mmc);
 
-int main() {
     cl_int err = CL_SUCCESS;
 
     cl_platform_id plat;
