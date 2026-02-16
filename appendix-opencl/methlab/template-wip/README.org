@@ -1,0 +1,46 @@
+* Hello Opencl
+The following aims at being a minimal self contained template for my opencl efforts
+based off of the saxpy sample from 
+https://github.com/KhronosGroup/OpenCL-SDK/
+
+So it's basically that example (without all the benchmarkery and debuggery)
+But I've have graciously stolen a concerning amount of utilities from the sdk and shoved them here
+
+* Attributions
+The files in here are, as the directory name might imply, a bit of a crackhouse
+
+Given that I needed something I could use as a minimal template to start from I didn't really want to have an SDK and a half as submodules so I found functions from various libraries that could have been of use in making the template in question and just shoved them in there with some adjustments.
+
+This makes the following directory and the files therein count as derivative works by the definition in the apache license which the sdk is released under.
+
+I should therefore have some attributions in here before I get sued by khronos (plus it's just good manners).
+
+** OpenCL SDK
+Most of the code here is my butchered frankenstein of code from https://github.com/KhronosGroup/OpenCL-SDK originally made by khronos group
+
+Code taken from that repo to make this directory includes
+- [[https://github.com/KhronosGroup/OpenCL-SDK/blob/main/samples/core/saxpy/main.c][the saxpy demo]]
+- [[https://github.com/KhronosGroup/OpenCL-SDK/blob/main/lib/include/CL/Utils/Context.h][the context utility library]] (implemented [[https://github.com/KhronosGroup/OpenCL-SDK/blob/main/lib/src/Utils/Context.c][here]])
+- [[https://github.com/KhronosGroup/OpenCL-SDK/blob/main/lib/include/CL/Utils/File.h][the file utility library]] (impelemented [[https://github.com/KhronosGroup/OpenCL-SDK/blob/main/lib/src/Utils/File.c][here]])
+- [[the error utility library]] (implemented [[https://github.com/KhronosGroup/OpenCL-SDK/blob/main/lib/src/Utils/Error.c][here]])
+
+Further details on how has each file been modified from that present in the opencl sdk repo may be found within the files themselves
+
+** Nob.h
+The ~read_entire_file~ function in ~mini-utils.h~ was brutally stolen from [[https://github.com/tsoding/nob.h/][nob.h]]
+
+** Whereami
+The whereami library in ~include~ may be found [[https://github.com/gpakosz/whereami][here]]
+
+* Atlas for the Files in Here
+- ~comp~ is just a build script
+
+The two entrypoints are
+- ~hello.c~ is a brutal enough port of the saxpy sample, a bit reformatted, with a slightly simplified logic, and with some extra comments from yours truly
+- ~hello-mini.c~ is a minified cousin of ~hello.c~, it has far less sophisticated error handling
+
+Library files are
+- ~include/mini-utils.c~ :: is a self contained conglomerate of utilities made while developing ~hello-mini.c~
+- ~include/error.h~, ~include/file.h~, ~include/context.h~ :: are the error, file, and context utility libraries respectively
+  that I copied from the sdk repo and turned into stb style libraries (declarations followed by definitions under an ~#ifdef~ guard) for ease of use in this templating effort
+- ~include/whereami.c~, ~include/whereami.h~ :: are the ~whereami~ library as stolen from github with some very minor adjustments

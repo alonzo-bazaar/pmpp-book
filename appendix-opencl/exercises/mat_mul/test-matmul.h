@@ -48,6 +48,8 @@ void kernel_matmul(const cl_kernel kernel,
                    const unsigned int height_A,
                    const unsigned int common,
                    const unsigned int width_B,
+                   const size_t group_x, // x and y sizes of work groups
+                   const size_t group_y,
                    float* out, float* A, float* B);
 
 // ignores kernel, context, queue, and queue
@@ -58,6 +60,8 @@ void cpu_matmul(const cl_kernel kernel,
                 const unsigned int height_A,
                 const unsigned int common,
                 const unsigned int width_B,
+                const size_t group_x,
+                const size_t group_y,
                 float* out, float* A, float* B);
 
 // to avoid code duplication
@@ -69,6 +73,8 @@ typedef void(*mm_fun)(const cl_kernel,
                       const unsigned int,
                       const unsigned int,
                       const unsigned int,
+		      const size_t,
+		      const size_t,
                       float*, float*, float* B);
 
 // assert equality between two floating point numbers within a given epsilon
@@ -128,6 +134,8 @@ void kernel_matmul(const cl_kernel kernel,
                       const unsigned int height_A,
                       const unsigned int common,
                       const unsigned int width_B,
+		      const size_t group_x,
+		      const size_t group_y,
                       float* out, float* A, float* B) {
     cl_int err;
 
@@ -166,29 +174,35 @@ void kernel_matmul(const cl_kernel kernel,
 
     // launch parameters
     // width first so that adjacent threads access adjacent matrix things
-    size_t dims[2] = {(size_t)width_B, (size_t)height_A};
+    size_t global_dims[2] = {(size_t)width_B, (size_t)height_A};
+    size_t local_dims[2]  = {group_x, group_y};
 
     // kernel launch
     // signature found here
     // https://registry.khronos.org/OpenCL/sdk/3.0/docs/man/html/clEnqueueNDRangeKernel.html
     try_ret(clEnqueueNDRangeKernel
-            (queue, kernel,
+            (queue,
+	     kernel,
              2,      // work dim is 2 (2d grid, rows and columns)
-             NULL,   // global offset is not provided
-             (size_t*)dims,   // dimensions of work are width_a * height_b
-             NULL,   // local work size (blocks) not provided
-                     // were it provided it would also be of length work dim
-             0,      // no events in waiting list
-             NULL,   // so the list of them is null
-             NULL)); // no event related to this kernel
-
+             NULL,   // global work offset is not provided, so NULL
+             global_dims,
+	             // dimensions of work are width_B * height_A
+	             // one work item per cell of output matrix
+             local_dims,
+	             // dimensions of work group/block are group_x * group_y
+		     
+             0,      // no events in waiting list, so the number of them is 0
+             NULL,   // and the list of them is NULL
+             NULL)); // and no event is liked to this kernel launch, so NULL
 
     // get data from kernel/device back into host
     // (expects queue to have been intialized WITHOUT the out of order option)
 
-    // when you start getting memory errors you should always double check every
-    // size parameter you pass to one of these motherfuckers
-    // you probably messed one of em up
+    // note for future self
+    // when you start getting arcane memory errors you should always
+    // double check every size parameter you pass to one of these opencl
+    // motherfuckers, you probably messed one of em up
+    // (they take big-ish formulas with a lot of params and shit, easily fucked)
     try_ret(clEnqueueReadBuffer(queue, dev_out, CL_BLOCKING, 0,
                                 height_A * width_B * sizeof(float),
                                 (void *)out,
@@ -205,11 +219,15 @@ void cpu_matmul(const cl_kernel kernel,
                 const unsigned int height_A,
                 const unsigned int common,
                 const unsigned int width_B,
+		const size_t group_x,
+		const size_t group_y,
                 float* out, float* A, float* B) {
     // ignored, kept for api consistency with other functions under test
     (void)kernel;
     (void)context;
     (void)queue;
+    (void)group_x;
+    (void)group_y;
 
     const unsigned int width_A  = common; // = height_B
 
@@ -229,6 +247,7 @@ void cpu_matmul(const cl_kernel kernel,
 
 
 // fuck it why not
+// (TODO: global config struct instead?)
 const unsigned int global_height_A = 200;
 const unsigned int global_width_A  = 300;
 const unsigned int global_height_B = 400;
@@ -257,6 +276,7 @@ void test_all_ones(const cl_kernel kernel,
 
     under_test(kernel, context, queue,
                height_A, width_A, width_B,
+	       16, 16, // random values I think look cool
                out, A, B);
 
 #ifdef VERBOSE_DEBUGGING
@@ -264,7 +284,6 @@ void test_all_ones(const cl_kernel kernel,
     println_mat(height_B, width_B, B);
     println_mat(height_A, width_B, out);
 #endif
-
     // every element in out should be the summation of common times 1.0f
     for(unsigned int i = 0; i<height_A * width_B; ++i)
         if(fabs(out[i] - (float)global_common_dimension) > 0.0001)
@@ -317,6 +336,7 @@ void test_id_times_random(const cl_kernel kernel,
 
     under_test(kernel, context, queue,
                height_A, width_A, width_B,
+	       16, 16,
                out, A, B);
 
     for(unsigned int i = 0; i<height_A * width_B; ++i)
@@ -330,12 +350,15 @@ void test_id_times_random(const cl_kernel kernel,
     free(out);
 }
 
+// commenting out cpu benchmarks so I can test various kernels against each other instead
+// as cpu tests are very slow in comparison and repeating them sounds like a bad idea
+
 void test_matmul(const cl_kernel kernel,
                  cl_context context,
                  cl_command_queue queue) {
-    DEBUG_PRINT("trying cpu");
-    test_all_ones(kernel, context, queue, cpu_matmul);
-    test_id_times_random(kernel, context, queue, cpu_matmul);
+    // DEBUG_PRINT("trying cpu");
+    // test_all_ones(kernel, context, queue, cpu_matmul);
+    // test_id_times_random(kernel, context, queue, cpu_matmul);
 
     DEBUG_PRINT("trying kernel");
     test_all_ones(kernel, context, queue, kernel_matmul);
@@ -345,17 +368,16 @@ void test_matmul(const cl_kernel kernel,
 void benchmark_matmul(const cl_kernel kernel,
                       cl_context context,
                       cl_command_queue queue) {
-    // stub function atm
-    // suppres ununsed warnings
-    puts("benchmarking cpu");
-    long long t = millis();
-    for(int i =0 ; i<20; ++i) {
-        printf("\r%02d", i);
-        test_all_ones(kernel, context, queue, cpu_matmul);
-        test_id_times_random(kernel, context, queue, cpu_matmul);
-    }
-    t = millis()-t;
-    printf("\ntook %lld.%lld seconds for 20 runs\n", t/1000, t%1000);
+    long long t
+    // puts("benchmarking cpu");
+    // t = millis();
+    // for(int i =0 ; i<20; ++i) {
+    //     printf("\r%02d", i);
+    //     test_all_ones(kernel, context, queue, cpu_matmul);
+    //     test_id_times_random(kernel, context, queue, cpu_matmul);
+    // }
+    // t = millis()-t;
+    // printf("\ntook %lld.%lld seconds for 20 runs\n", t/1000, t%1000);
 
     puts("benchmarking kernel");
     t = millis();

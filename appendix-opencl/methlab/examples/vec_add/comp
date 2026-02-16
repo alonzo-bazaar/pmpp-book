@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# set c compiler here
+CC=gcc
+
+# minimum compilinx example and build commands from
+# https://github.com/KhronosGroup/OpenCL-Guide/blob/main/chapters/getting_started_linux.md
+comp-cl() {
+    local args=( "$@" )
+    $CC -Wall -Wextra -Wpedantic\
+        -DCL_TARGET_OPENCL_VERSION=300\
+        -lOpenCL\
+        "${args[@]}"
+}
+
+comp-cpu() {
+    local args=( "$@" )
+    $CC -Wall -Wextra -Wpedantic\
+        "${args[@]}"
+}
+
+main() {
+    comp-cl -Iinclude -o build/main-cl 'main-cl.c'
+    comp-cpu -o build/main-cpu 'main-cpu.c'
+}
+
+main "$@"
