@@ -1,4 +1,23 @@
 * PMPP BOOK
-exercises, notes, and the like from the book
+Exercises, notes, and the like from the book
 
-versioned for future reference, +pumping github commit count,+ and ease in sending the exercise to someone when everything stops working
+Versioned for future reference, +pumping github commit count,+ and ease in sending the exercise to someone when everything stops working
+
+#+begin_quote
+*NOTE:* the exercises&Co. from this repo are based on the third edition of the book.
+I know there is a fourth one, and a fifth one underway, I don't have em.
+#+end_quote
+* Currently done
+- [X] Chapter 3 :: Scalable Parallel Execution
+- [-] Chapter 4 :: Performance Considerations =(currently on hold)=
+  - [X] naive matrix multiplication
+  - [X] cpu implementation to compare against
+  - [X] tests and benchmarks for matrix multiplication
+  - [ ] tiled matrix multiplication
+  - [ ] tiled matrix multiplication with coalesced memory accesses
+- [ ] Chapter 8 :: Parallel Patterns: prefix sum
+  - [ ] cpu implementation to compare against
+  - [ ] tests and benchmarks
+  - [ ] kogge stone
+  - [ ] brent kung
+  - [ ] et al
