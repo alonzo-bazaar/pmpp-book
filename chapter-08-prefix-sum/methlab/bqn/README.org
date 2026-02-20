@@ -1,0 +1,11 @@
+I am using this directory and the files therein to rapidly explore the various array operations that make up this chapter
+and I find bqn to be the quickest way to do that as of writing
+at least the quickest way for me, and that I know how to use
+
+This directory shall include notes, curses, and overly commented +arcane+ array runes
+
+~kogge-stone.bqn~ was written first and ~brent-kung.bqn~ was written afterwards with some... questionable borrowing from kogge stone
+
+The two files aren't really executable or meant to be executed, and have been mostly used as a scratchpad (or, as the directory name might imply, methlab) for the author to step through these procedures and generally mess around.
+
+They are versioned because why not

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# set c compiler here
+CC=gcc
+
+# opencl build commands from
+# https://github.com/KhronosGroup/OpenCL-Guide/blob/main/chapters/getting_started_linux.md
+
+# basic compilation
+comp() {
+    $CC -Wall -Wextra\
+	-lm\
+	-g3 -ggdb\
+    "$@"
+}
+
+# with opencl specific shit
+comp-cl() {
+    comp -DCL_TARGET_OPENCL_VERSION=300\
+         -lOpenCL\
+         "$@"
+}
+
+# with cpu specific shit (none atm)
+comp-cpu() {
+    comp "$@" 
+}
+
+main() {
+    # ./include for includes local to this example
+    # ../include for includes global among the various examples
+    comp-cl -I./include\
+	    -I../include\
+	    -o build/main 'main.c' "$@"
+}
+
+main "$@"

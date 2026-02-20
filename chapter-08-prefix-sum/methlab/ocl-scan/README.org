@@ -1,0 +1,3 @@
+rewriting the various scan procedures from the chapter (as opencl kernels)
+
+also includes some testing and benchmarking code

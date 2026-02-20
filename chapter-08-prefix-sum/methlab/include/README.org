@@ -1,0 +1,4 @@
+general purpose header files
+copied between chapter directories because... I have made some questionable choices in organizing this directories
+
+a lot of these are headers that I would /like/ to make, but are currently kinda not existing, or all together in ~"general.h"~

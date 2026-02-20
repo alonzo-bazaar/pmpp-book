@@ -1,0 +1,149 @@
+
+../include/argparse.c,747
+arg_specs* argparse_create_empty_specs(8,184
+void argparse_bind(17,457
+void argparse_bind_flag(50,1175
+void argparse_bind_int(55,1343
+void argparse_bind_uint(60,1510
+void argparse_bind_size_t(65,1686
+void argparse_bind_float(70,1862
+void argparse_bind_double(75,2034
+void argparse_bind_string(80,2210
+void argparse_bind_fileptr(85,2385
+const char* argparse_stringify_type(91,2564
+const char* argparse_strip_leading_dashes(108,3079
+arg_specs* argparse_find_spec(115,3221
+bool argparse_assign_values(126,3536
+void argparse_print_usage(211,5706
+void argparse_print_flag_help(220,5968
+void argparse_print_flag_help_name(273,7021
+void argparse_print_flags_help(277,7157
+void argparse_print_help(283,7295
+void argparse_free(289,7437
+
+../include/argparse.h,551
+#define BOIDS_ARGPARSE_H2,25
+	ARGPARSE_EMPTY 18,378
+	ARGPARSE_FLAG,22,525
+	ARGPARSE_INT,26,664
+	ARGPARSE_INT, ARGPARSE_UINT,26,664
+	ARGPARSE_INT, ARGPARSE_UINT, ARGPARSE_SIZE_T,26,664
+	ARGPARSE_FLOAT,27,711
+	ARGPARSE_FLOAT, ARGPARSE_DOUBLE,27,711
+	ARGPARSE_STRING,28,745
+	ARGPARSE_STRING, ARGPARSE_FILEPTR28,745
+} argparse_type;29,780
+struct arg_specs 33,894
+	const char* flag_name;34,913
+	void* ptr;35,937
+	const char* help;36,949
+	argparse_type type;37,968
+	struct arg_specs* next;38,989
+typedef struct arg_specs arg_specs;41,1018
+
+../include/printvecs.h,97
+void print_vec(14,417
+void println_vec(23,598
+void print_mat(28,690
+void println_mat(44,1045
+
+../include/readfile.h,30
+bool read_entire_file(19,670
+
+../include/debugging.h,249
+#define DEBUG_PRINTF(20,712
+#define DEBUG_PRINTF_ERR(22,824
+#define DEBUG_PRINT(24,946
+#define DEBUG_PRINT_ERR(26,1030
+#define DEBUG_PRINTF(31,1128
+#define DEBUG_PRINTF_ERR(32,1167
+#define DEBUG_PRINT(33,1210
+#define DEBUG_PRINT_ERR(34,1243
+
+../include/maintest.c,409
+#define ARGPARSE_INCLUDE_IMPLEMENTATION7,250
+	bool quiet;11,329
+	bool help;12,342
+	int pinco;14,355
+	unsigned int pallino;15,367
+	size_t pippo_baudo;16,390
+	float la_donna;18,412
+	double e_mobile;19,429
+	char* li_mortacci;21,448
+	FILE* tua;22,468
+} config;23,480
+void config_set_default(25,491
+const char* render_file(40,704
+void dump_config(47,880
+void test_argparse(68,1310
+int main(89,2064
+
+../include/timing.h,32
+long long current_millis(6,132
+
+../include/oclutils.h,62
+cl_int build_program(23,719
+cl_device_id get_device(45,1689
+
+../include/error.h,293
+#define CL_UTIL_INDEX_OUT_OF_RANGE 7,153
+#define CL_UTIL_DEVICE_NOT_INTEROPERABLE 8,194
+#define CL_UTIL_FILE_OPERATION_ERROR 9,241
+#define try_par(35,1431
+#define try_par_err(48,2136
+#define try_ret(60,2788
+#define die(75,3608
+#define die_fmt(83,4044
+void cl_util_print_error(94,4605
+
+include/config.h,333
+#define ARGPARSE_INCLUDE_IMPLEMENTATION7,135
+    size_t array_length;17,561
+    size_t group_length;18,586
+    FILE* test_output;20,614
+    FILE* test_error_output;21,678
+    FILE* benchmark_output;22,735
+    FILE* benchmark_error_output;23,798
+	bool also_test_cpu;25,861
+	bool also_benchmark_cpu;26,882
+} ps_config;27,908
+
+include/config.c,110
+void populate_default_config(3,20
+void bind_arg_specs_to_config(18,724
+void parse_argv_into_config(39,1610
+
+test-scan.h,590
+#define PRINTVECS_INCLUDE_IMPLEMENTATION14,416
+#define TIMING_INCLUDE_IMPLEMENTATION15,457
+#define ERROR_INCLUDE_IMPLEMENTATION16,495
+#define EPS 22,735
+void cpu_scan_in_place(58,1983
+void cpu_scan(64,2085
+void kernel_scan_in_place(70,2224
+void kernel_scan(117,3786
+void fill_with_same(124,3911
+void fill_with_iota(130,4036
+void assert_all_val(140,4246
+void assert_vectors_equal(151,4577
+void assert_iota(164,4936
+void assert_triangular(180,5341
+void test_const_input(203,6029
+void test_iota_input(228,6613
+void test_everything(256,7243
+void benchmark_everything(273,7639
+
+main.c,429
+#define ERROR_INCLUDE_IMPLEMENTATION4,37
+#define READFILE_INCLUDE_IMPLEMENTATION5,74
+#define OCL_UTILS_INCLUDE_IMPLEMENTATION6,114
+#define CONFIG_INCLUDE_IMPLEMENTATION7,155
+ps_config psc;16,422
+cl_platform_id plat;22,643
+cl_device_id dev;23,664
+cl_context context;25,683
+cl_command_queue queue;26,703
+cl_program program;27,727
+cl_kernel kernel;28,747
+#define TEST_SCAN_INCLUDE_IMPLMEMENTATION30,766
+int main(33,832
