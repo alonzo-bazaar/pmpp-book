@@ -66,10 +66,15 @@ int main(int argc, char** argv) {
     // get kernel from program
     try_par(kernel = clCreateKernel(program, "bk_in_place", &err));
 
-    puts("starting tests...");
-    test_everything();
-    puts("starting benchmarks...");
-    benchmark_everything();
+    float f[64];
+    fill_with_same(64, f, 1.0f);
+    cpu_scan_in_place(64, f);
+    println_vec(64, f);
+
+    // puts("starting tests...");
+    // test_everything();
+    // puts("starting benchmarks...");
+    // benchmark_everything();
 
     // cleanup
     // c side

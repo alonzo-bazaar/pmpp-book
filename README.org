@@ -4,20 +4,35 @@ Exercises, notes, and the like from the book
 Versioned for future reference, +pumping github commit count,+ and ease in sending the exercise to someone when everything stops working
 
 #+begin_quote
-*NOTE:* the exercises&Co. from this repo are based on the third edition of the book.
+*NOTE 1:* the exercises&Co. from this repo are based on the third edition of the book.
 I know there is a fourth one, and a fifth one underway, I don't have em.
 #+end_quote
+
+#+begin_quote
+*NOTE 2:* I don't have a working cuda gpu, and I'm not gonna use a cloud cuda gpu, because all the free ones can only be accessed through a jupyter notebook, and I detest jupyter notebooks with a passion that prevents me from doing anything with them unless I am legally unable to use something else.
+
+So, to have something that can run on my gpu, so that I may measure speedups and the like, most of the code here is implemented in opencl instead of cuda, this shouldn't be a problem to the reader given that I'm using opencl as a "generalization of cuda" so all the code should look rather familiar to a cuda conniseur.
+#+end_quote
 * Currently done
+I am iterating this book in a rather sparse manner so here's a list of the things I have done so far
+
 - [X] Chapter 3 :: Scalable Parallel Execution
-- [-] Chapter 4 :: Performance Considerations =(currently on hold)=
+  - [X] exercises
+- [-] Chapter 4 :: Memory and Data Locality =(currently on hold)=
   - [X] naive matrix multiplication
   - [X] cpu implementation to compare against
   - [X] tests and benchmarks for matrix multiplication
   - [ ] tiled matrix multiplication
   - [ ] tiled matrix multiplication with coalesced memory accesses
-- [ ] Chapter 8 :: Parallel Patterns: prefix sum
-  - [ ] cpu implementation to compare against
-  - [ ] tests and benchmarks
-  - [ ] kogge stone
-  - [ ] brent kung
+  - [X] exercises
+- [ ] Chapter 5 :: Performance Considerations
+- [-] Chapter 8 :: Parallel Patterns: Prefix Sum
+  - [X] cpu implementation to compare against
+  - [ ] tests
+  - [ ] benchmarks
+  - [X] kogge stone
+  - [X] brent kung
   - [ ] et al
+  - [ ] exercises
+- [ ] Chapter 9 :: Parallel Patterns: Parallel Histogram Computation
+  - [ ] exercises

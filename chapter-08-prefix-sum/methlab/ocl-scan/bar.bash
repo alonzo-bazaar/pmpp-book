@@ -23,7 +23,6 @@ print_bar () {
 
 # ignore first two lines, they are status whatevers printed by ./build/main
 read
-read
 
 # `xargs echo' is a very... suboptimal way to remove excess whitespace
 # and does not make it viable to use this script in a streaming fashion
